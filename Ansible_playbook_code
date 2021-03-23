@@ -1,0 +1,29 @@
+- hosts: all
+  tasks:
+          - name: "Installing docker"
+            command: "yum -y install docker-ce --nobest"
+          - name: "Starting docker services"
+            service:
+               name: "docker"
+               state: started
+               enabled: yes
+          - name: "Installing python library for docker"
+            pip:
+               name: "docker"
+          - name: "Copying html code to target node"
+            copy:
+               src: "/root/ansiblework/task10doc.html"
+               dest: "/root/task/"
+          - name: "Disabling firewall"
+            command: "systemctl stop firewalld"
+          - name: "Launching docker container with httpd image and exposing it t                                                                                                             o the public with port no 8080"
+            docker_container:
+               name: "task10_container"
+               image: "httpd:latest"
+               state: started
+               detach: yes
+               ports:
+                       - "8080:80"
+               volumes:
+                       - "/root/task:/usr/local/apache2/htdocs/"
+
